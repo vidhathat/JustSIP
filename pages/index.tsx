@@ -22,7 +22,7 @@ export default function LandingPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Image 
-                src="/base-logo.svg" 
+                src="/images/baselogo.png" 
                 alt="Base Logo" 
                 width={32} 
                 height={32}
@@ -43,7 +43,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5"></div>
           <div className="relative">
             <h1 className="text-4xl sm:text-7xl font-bold mb-6 text-gray-900">
-              DCA into crypto<br />on <span className="text-[#0052FF]">Base</span>
+              Start your <span className="text-[#0052FF]">SIP</span> <br /> into crypto on <span className="text-[#0052FF]">Base</span>
             </h1>
             <p className="text-xl mb-12 max-w-2xl mx-auto text-gray-600">
               Automate your crypto investments with dollar-cost averaging.
@@ -173,7 +173,7 @@ export default function LandingPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Image 
-                src="/base-logo.svg" 
+                src="/images/baselogo.png" 
                 alt="Base Logo" 
                 width={24} 
                 height={24}

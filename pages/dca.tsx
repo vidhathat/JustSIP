@@ -13,7 +13,7 @@ interface DCAConfig {
 
 export default function DCAPage() {
   const router = useRouter();
-  const { ready, authenticated, user } = usePrivy();
+  const { ready, authenticated } = usePrivy();
   const [dcaConfig, setDcaConfig] = useState<DCAConfig>({
     token: 'ETH',
     amount: 100,
