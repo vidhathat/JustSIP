@@ -6,13 +6,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Adelle Sans', ...defaultTheme.fontFamily.sans],
+        sans: ['Coinbase Sans', ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        'privy-navy': '#160B45',
-        'privy-light-blue': '#EFF1FD',
-        'privy-blueish': '#D4D9FC',
-        'privy-pink': '#FF8271',
+        'base-blue': '#0052FF',
+        'base-black': '#000000',
+        'base-white': '#FFFFFF',
       },
     },
   },
