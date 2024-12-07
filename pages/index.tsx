@@ -6,8 +6,9 @@ import Image from "next/image";
 export default function LandingPage() {
   const router = useRouter();
   const { login } = useLogin({
-    onComplete: () => router.push("/dashboard"),
+    onComplete: () => router.push("/dca"),
   });
+
 
   return (
     <>
