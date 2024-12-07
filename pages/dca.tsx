@@ -6,20 +6,20 @@ import Image from "next/image";
 
 
 interface DCAConfig {
+  frequency: 'days' | 'weeks' | 'months';
+  duration: number; // in months
+  amountPerInvestment: number;
   token: string;
-  amount: number;
-  frequency: 'daily' | 'weekly' | 'monthly';
-  network: string;
 }
 
 export default function DCAPage() {
   const router = useRouter();
   const { ready, authenticated } = usePrivy();
   const [dcaConfig, setDcaConfig] = useState<DCAConfig>({
-    token: 'ETH',
-    amount: 100,
-    frequency: 'monthly',
-    network: 'Base'
+    frequency: 'months',
+    duration: 12, // default 12 months
+    amountPerInvestment: 100,
+    token: 'ETH'
   });
 
   useEffect(() => {
@@ -27,6 +27,26 @@ export default function DCAPage() {
       router.push("/");
     }
   }, [ready, authenticated, router]);
+
+  const calculateTotalInvestment = () => {
+    const frequencyMultiplier = {
+      days: 1,
+      weeks: 1,
+      months: 1
+    };
+    
+    const investmentsPerMonth = frequencyMultiplier[dcaConfig.frequency];
+    const totalMonths = dcaConfig.duration;
+    const totalInvestments = totalMonths * investmentsPerMonth;
+    const totalAmount = totalMonths * dcaConfig.amountPerInvestment;
+    
+    return {
+      totalAmount,
+      totalInvestments
+    };
+  };
+
+  const { totalAmount } = calculateTotalInvestment();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +88,7 @@ export default function DCAPage() {
                 
                 <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
+                  <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700">
                         Select Token
                       </label>
@@ -79,23 +99,10 @@ export default function DCAPage() {
                       >
                         <option value="ETH">Ethereum (ETH)</option>
                         <option value="USDC">USD Coin (USDC)</option>
+                        <option value="WBTC">Wrapped Bitcoin (WBTC)</option>
                         <option value="cbETH">Coinbase ETH (cbETH)</option>
                       </select>
                     </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700">
-                        Investment Amount (USD)
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={dcaConfig.amount}
-                        onChange={(e) => setDcaConfig({...dcaConfig, amount: Number(e.target.value)})}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
-                      />
-                    </div>
-
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700">
                         Investment Frequency
@@ -105,17 +112,49 @@ export default function DCAPage() {
                         onChange={(e) => setDcaConfig({...dcaConfig, frequency: e.target.value as DCAConfig['frequency']})}
                         className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
                       >
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
+                        <option value="months">Monthly</option>
+                        <option value="weeks">Weekly</option>
+                        <option value="days">Daily</option>
                       </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">
+                        Investment Duration ({dcaConfig.frequency})
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={dcaConfig.duration}
+                        onChange={(e) => setDcaConfig({...dcaConfig, duration: Number(e.target.value)})}
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">
+                        Amount per Investment (USD)
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={dcaConfig.amountPerInvestment}
+                        onChange={(e) => setDcaConfig({...dcaConfig, amountPerInvestment: Number(e.target.value)})}
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
+                      />
                     </div>
 
                     <div className="bg-[#0052FF]/5 p-6 rounded-xl border border-[#0052FF]/10">
                       <h3 className="font-medium mb-3 text-[#0052FF]">Investment Summary</h3>
-                      <p className="text-gray-700">
-                        You will invest ${dcaConfig.amount} in {dcaConfig.token} {dcaConfig.frequency} on Base network
-                      </p>
+                      <div className="space-y-2">
+                        <p className="text-gray-700">
+                          You will invest <span className="font-semibold">${dcaConfig.amountPerInvestment}</span> in {dcaConfig.token} for
+                           <span className="font-semibold"> {dcaConfig.duration} {dcaConfig.frequency}</span>
+                        </p>
+                        <p className="text-gray-700 font-medium">
+                          Total investment amount: <span className="text-[#0052FF] font-bold">${totalAmount}</span>
+                        </p>
+                      </div>
                       <div className="mt-4 text-sm text-gray-500">
                         <p>• Transactions will be executed automatically</p>
                         <p>• Gas fees will be deducted from your wallet</p>
@@ -127,7 +166,7 @@ export default function DCAPage() {
                       type="submit"
                       className="w-full bg-[#0052FF] hover:bg-[#0052FF]/90 text-white font-medium py-4 px-6 rounded-xl transition-all"
                     >
-                      Confirm DCA Setup
+                      Start DCA Investment
                     </button>
                   </form>
                 </div>
