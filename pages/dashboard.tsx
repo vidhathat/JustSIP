@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getAccessToken, usePrivy, useWallets } from "@privy-io/react-auth";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
 import Head from "next/head";
 import { parseEther } from "ethers";
 import { createWalletClient, custom } from 'viem';
