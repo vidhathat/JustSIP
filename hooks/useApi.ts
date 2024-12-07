@@ -7,7 +7,7 @@ interface ApiResponse<T> {
 }
 
 interface UseApiResponse<T> extends ApiResponse<T> {
-  execute: (...args: any[]) => Promise<void>;
+  execute: (...args: any[]) => Promise<T | undefined>;
   reset: () => void;
 }
 
@@ -25,14 +25,16 @@ export function useApi<T>(
   }, []);
 
   const execute = useCallback(
-    async (...args: any[]) => {
+    async (...args: any[]): Promise<T | undefined> => {
       try {
         setLoading(true);
         setError(null);
         const result = await apiFunction(...args);
         setData(result);
+        return result;
       } catch (err) {
         setError(err instanceof Error ? err : new Error('An error occurred'));
+        return undefined;
       } finally {
         setLoading(false);
       }

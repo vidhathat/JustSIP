@@ -21,7 +21,9 @@
     "ethers": "^6.13.4",
     "next": "latest",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-icons": "^5.4.0",
+    "wagmi": "^2.13.4"
   },
   "devDependencies": {
     "@tsconfig/next": "^2.0.0",
