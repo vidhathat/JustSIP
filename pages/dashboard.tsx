@@ -13,13 +13,11 @@ type TransactionResult = {
   error?: string;
 };
 export default function DashboardPage() {
-  const [verifyResult, setVerifyResult] = useState();
   const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
   const router = useRouter();
   const {
     ready,
     authenticated,
-    user,
     logout,
   } = usePrivy();
 
