@@ -45,7 +45,7 @@ export default function DCAPage() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <Image 
-                    src="/base-logo.svg" 
+                    src="/images/baselogo.png" 
                     alt="Base Logo" 
                     width={32} 
                     height={32}
@@ -137,7 +137,7 @@ export default function DCAPage() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <Image 
-                    src="/base-logo.svg" 
+                    src="/images/baselogo.png" 
                     alt="Base Logo" 
                     width={24} 
                     height={24}

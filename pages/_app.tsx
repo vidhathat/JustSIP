@@ -43,8 +43,15 @@ function MyApp({ Component, pageProps }: AppProps) {
       <PrivyProvider
         appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ""}
         config={{
-          embeddedWallets: {
-            createOnLogin: "all-users",
+          loginMethods: ['wallet'], 
+          appearance: { 
+            walletList: ['coinbase_wallet', 'wallet_connect'], 
+        },  
+          externalWallets: { 
+            coinbaseWallet: { 
+              // Valid connection options include 'all' (default), 'eoaOnly', or 'smartWalletOnly'
+              connectionOptions: 'smartWalletOnly', 
+            }, 
           },
         }}
       >
@@ -53,5 +60,5 @@ function MyApp({ Component, pageProps }: AppProps) {
     </>
   );
 }
-
 export default MyApp;
+
