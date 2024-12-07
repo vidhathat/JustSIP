@@ -4,6 +4,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import Image from "next/image";
 
+
 interface DCAConfig {
   token: string;
   amount: number;

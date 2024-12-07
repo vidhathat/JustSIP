@@ -1,41 +1,30 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getAccessToken, usePrivy } from "@privy-io/react-auth";
+import { getAccessToken, usePrivy, useWallets } from "@privy-io/react-auth";
 import Head from "next/head";
+import { parseEther } from "ethers";
+import { createWalletClient, custom } from 'viem';
+import { base } from 'viem/chains';
 
-async function verifyToken() {
-  const url = "/api/verify";
-  const accessToken = await getAccessToken();
-  const result = await fetch(url, {
-    headers: {
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined),
-    },
-  });
-
-  return await result.json();
-}
-
+// ... (keep other existing imports and functions)
+type TransactionResult = {
+  success: boolean;
+  transactionHash?: string;
+  error?: string;
+};
 export default function DashboardPage() {
   const [verifyResult, setVerifyResult] = useState();
+  const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
   const router = useRouter();
   const {
     ready,
     authenticated,
     user,
     logout,
-    linkEmail,
-    linkWallet,
-    unlinkEmail,
-    linkPhone,
-    unlinkPhone,
-    unlinkWallet,
-    linkGoogle,
-    unlinkGoogle,
-    linkTwitter,
-    unlinkTwitter,
-    linkDiscord,
-    unlinkDiscord,
   } = usePrivy();
+
+  // Important: Use useWallets hook to get connected wallets
+  const { wallets } = useWallets();
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -43,16 +32,71 @@ export default function DashboardPage() {
     }
   }, [ready, authenticated, router]);
 
-  const numAccounts = user?.linkedAccounts?.length || 0;
-  const canRemoveAccount = numAccounts > 1;
+  // Improved wallet initialization function
+  const initializeWallet = async () => {
+    // Ensure we have a wallet
+    if (!wallets || wallets.length === 0) {
+      throw new Error("No wallets connected");
+    }
 
-  const email = user?.email;
-  const phone = user?.phone;
-  const wallet = user?.wallet;
+    // Take the first wallet
+    const wallet = wallets[0];
 
-  const googleSubject = user?.google?.subject || null;
-  const twitterSubject = user?.twitter?.subject || null;
-  const discordSubject = user?.discord?.subject || null;
+    try {
+      // Switch to Base chain
+      await wallet?.switchChain(8453);
+
+      // Get Ethereum provider
+      const provider = await wallet?.getEthereumProvider();
+      if (!provider) {
+        throw new Error("Could not get Ethereum provider");
+      }
+
+      // Create wallet client
+      return createWalletClient({
+        chain: base,
+        transport: custom(provider),
+      });
+    } catch (error) {
+      console.error("Wallet initialization error:", error);
+      throw error;
+    }
+  };
+
+  // Improved transaction handling
+  const handleSendTransaction = async () => {
+    console.log("Sending transaction...");
+    try {
+      // Initialize wallet
+      const walletClient = await initializeWallet();
+      console.log("Wallet client initialized");
+
+      // Get the first wallet's address
+      const [address] = await walletClient.getAddresses();
+      if (!address) {
+        throw new Error("No address found");
+      }
+      console.log("Address found:", address);
+      // Send transaction
+      const hash = await walletClient.sendTransaction({
+        account: address,
+        to: '0x2c682afd9f8aafa8d9caa50fedfdd89ebcf9c3d8',
+        value: parseEther('0.00001'),
+        chain: base
+      });
+      console.log("Transaction sent with hash:", hash);
+      setTransactionResult({
+        success: true,
+        transactionHash: hash
+      });
+    } catch (error: any) {
+      console.error("Transaction error:", error);
+      setTransactionResult({
+        success: false,
+        error: error.message
+      });
+    }
+  };
 
   return (
     <>
@@ -63,167 +107,31 @@ export default function DashboardPage() {
       <main className="flex flex-col min-h-screen px-4 sm:px-20 py-6 sm:py-10 bg-privy-light-blue">
         {ready && authenticated ? (
           <>
-            <div className="flex flex-row justify-between">
-              <h1 className="text-2xl font-semibold">Privy Auth Demo</h1>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => router.push('/dca')}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
-                >
-                  Setup DCA
-                </button>
-                <button
-                  onClick={logout}
-                  className="text-sm bg-violet-200 hover:text-violet-900 py-2 px-4 rounded-md text-violet-700"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
+            {/* ... existing code ... */}
             <div className="mt-12 flex gap-4 flex-wrap">
-              {googleSubject ? (
-                <button
-                  onClick={() => {
-                    unlinkGoogle(googleSubject);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink Google
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    linkGoogle();
-                  }}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
-                >
-                  Link Google
-                </button>
-              )}
-
-              {twitterSubject ? (
-                <button
-                  onClick={() => {
-                    unlinkTwitter(twitterSubject);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink Twitter
-                </button>
-              ) : (
-                <button
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
-                  onClick={() => {
-                    linkTwitter();
-                  }}
-                >
-                  Link Twitter
-                </button>
-              )}
-
-              {discordSubject ? (
-                <button
-                  onClick={() => {
-                    unlinkDiscord(discordSubject);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink Discord
-                </button>
-              ) : (
-                <button
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
-                  onClick={() => {
-                    linkDiscord();
-                  }}
-                >
-                  Link Discord
-                </button>
-              )}
-
-              {email ? (
-                <button
-                  onClick={() => {
-                    unlinkEmail(email.address);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink email
-                </button>
-              ) : (
-                <button
-                  onClick={linkEmail}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
-                >
-                  Connect email
-                </button>
-              )}
-              {wallet ? (
-                <button
-                  onClick={() => {
-                    unlinkWallet(wallet.address);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink wallet
-                </button>
-              ) : (
-                <button
-                  onClick={linkWallet}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white border-none"
-                >
-                  Connect wallet
-                </button>
-              )}
-              {phone ? (
-                <button
-                  onClick={() => {
-                    unlinkPhone(phone.number);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink phone
-                </button>
-              ) : (
-                <button
-                  onClick={linkPhone}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white border-none"
-                >
-                  Connect phone
-                </button>
-              )}
-
+              {/* Send Transaction Button */}
               <button
-                onClick={() => verifyToken().then(setVerifyResult)}
-                className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white border-none"
+                onClick={handleSendTransaction}
+                disabled={!wallets || wallets.length === 0}
+                className="text-sm bg-green-600 hover:bg-green-700 py-2 px-4 rounded-md text-white disabled:bg-gray-400"
               >
-                Verify token on server
+                Send Transaction
               </button>
-
-              {Boolean(verifyResult) && (
-                <details className="w-full">
-                  <summary className="mt-6 font-bold uppercase text-sm text-gray-600">
-                    Server verify result
-                  </summary>
-                  <pre className="max-w-4xl bg-slate-700 text-slate-50 font-mono p-4 text-xs sm:text-sm rounded-md mt-2">
-                    {JSON.stringify(verifyResult, null, 2)}
-                  </pre>
-                </details>
-              )}
+              <button onClick={logout}>Logout</button>
+              {/* ... other buttons ... */}
             </div>
 
-            <p className="mt-6 font-bold uppercase text-sm text-gray-600">
-              User object
-            </p>
-            <pre className="max-w-4xl bg-slate-700 text-slate-50 font-mono p-4 text-xs sm:text-sm rounded-md mt-2">
-              {JSON.stringify(user, null, 2)}
-            </pre>
+            {/* Transaction Result Display */}
+            {transactionResult && (
+              <details className="w-full mt-4">
+                <summary className="mt-6 font-bold uppercase text-sm text-gray-600">
+                  Transaction Result
+                </summary>
+                <pre className="max-w-4xl bg-slate-700 text-slate-50 font-mono p-4 text-xs sm:text-sm rounded-md mt-2">
+                  {JSON.stringify(transactionResult, null, 2)}
+                </pre>
+              </details>
+            )}
           </>
         ) : null}
       </main>
