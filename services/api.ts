@@ -72,3 +72,9 @@ export const getTokenBalancesForWallet = async (walletAddress: string) => {
   const response = await axios.get(`${BASE_URL}/wallet/balances/${walletAddress}`);
   return response.data;
 };
+
+// Update SIP
+export const updateSip = async (walletId: string, sipId: string, data: { amount: number | undefined, frequency: string | undefined, status: SipStatus | undefined }) => {
+  const response = await axios.put(`${BASE_URL}/sip/${walletId}/${sipId}`, data);
+  return response.data;
+};
