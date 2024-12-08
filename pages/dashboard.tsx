@@ -6,7 +6,7 @@ import Image from "next/image";
 import { getSipsForWallet, getWalletByAddress, updateSip, deleteSip } from "../services/api";
 import Loader from "../components/Loader";
 import moment from "moment";
-import { TOKEN_MAP } from "../constants/utils";
+import { getTokenName, TOKEN_MAP } from "../constants/utils";
 import ActionButton from "../components/ActionButton";
 import ActionModal from "../components/ActionModal";
 import Navigation from "../components/Navigation";
@@ -24,10 +24,6 @@ type Sip = {
   last_execution: string | null;
   created_at: string;
   updated_at: string;
-};
-
-const getTokenName = (address: string) => {
-  return Object.keys(TOKEN_MAP).find(key => TOKEN_MAP[key as keyof typeof TOKEN_MAP] === address) || address;
 };
 
 export default function Dashboard() {

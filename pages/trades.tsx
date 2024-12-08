@@ -5,6 +5,7 @@ import Head from "next/head";
 import Navigation from "../components/Navigation";
 import { getTradesForWallet, getWalletByAddress } from "../services/api";
 import moment from "moment";
+import { getTokenName } from "../constants/utils";
 
 interface Trade {
   id: number;
@@ -154,13 +155,13 @@ export default function TradesPage() {
                                 {moment(trade.created_at).format('MMM D, YYYY h:mm A')}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                {formatToken(trade.from_token)}
+                                {getTokenName(trade.from_token)}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                {formatToken(trade.to_token)}
+                                {getTokenName(trade.to_token)}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {trade.amount} {formatToken(trade.to_token)}
+                                {trade.amount} {getTokenName(trade.to_token)}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm">
                                 <a
