@@ -2,12 +2,14 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
+import Image from "next/image";
 import { getSipsForWallet, getWalletByAddress, updateSip, deleteSip } from "../services/api";
 import Loader from "../components/Loader";
 import moment from "moment";
 import { TOKEN_MAP } from "../constants/utils";
 import ActionButton from "../components/ActionButton";
 import ActionModal from "../components/ActionModal";
+import Navigation from "../components/Navigation";
 
 type Sip = {
   id: number;
@@ -28,7 +30,7 @@ const getTokenName = (address: string) => {
   return Object.keys(TOKEN_MAP).find(key => TOKEN_MAP[key as keyof typeof TOKEN_MAP] === address) || address;
 };
 
-export default function DashboardPage() {
+export default function Dashboard() {
   const [sips, setSips] = useState<Sip[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
@@ -191,26 +193,13 @@ export default function DashboardPage() {
   return (
     <>
       <Head>
-        <title>JustSIP - Dashboard</title>
-        <meta name="description" content="Manage your investments and wallet on JustSIP." />
+        <title>Dashboard - JustSIP</title>
       </Head>
 
       <main className="min-h-screen bg-white">
         {ready && authenticated ? (
           <>
-            <nav className="px-6 py-4 sm:px-20 border-b border-gray-100">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold text-[#0052FF]">JustSIP Dashboard</div>
-                </div>
-                <button
-                  onClick={logout}
-                  className="bg-[#0052FF] hover:bg-[#0052FF]/90 text-white px-6 py-2 rounded-full transition-all font-medium"
-                >
-                  Logout
-                </button>
-              </div>
-            </nav>
+            <Navigation />
 
             <div className="px-6 sm:px-12 py-12">
               <div className="max-w-8xl mx-auto">
