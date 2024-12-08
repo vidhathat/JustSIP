@@ -49,7 +49,7 @@ export default function TradesPage() {
       }
 
       // Get trades using the wallet_id
-      const tradesResponse = await getTradesForWallet(currentWalletId);
+      const tradesResponse = await getTradesForWallet(currentWalletId!);
       if (!tradesResponse.success) {
         throw new Error("Failed to fetch trades");
       }
@@ -90,13 +90,6 @@ export default function TradesPage() {
 
     return () => clearInterval(intervalId);
   }, [ready, authenticated, user, fetchTrades]);
-
-  const formatToken = (token: string) => {
-    if (token.startsWith('0x')) {
-      return 'USDC';
-    }
-    return token.toUpperCase();
-  };
 
   return (
     <>

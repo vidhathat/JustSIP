@@ -196,18 +196,6 @@ export default function DCAPage() {
               onConfirm={handleConfirmDCA}
               type="edit"
               title="Confirm DCA Investment"
-              message={
-                error ? (
-                  <div className="text-red-600 mb-4">{error}</div>
-                ) : isCreatingSip ? (
-                  <div className="flex flex-col items-center justify-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0052FF] mb-2"></div>
-                    <p className="text-gray-600">Creating your DCA investment...</p>
-                  </div>
-                ) : (
-                  "Please review your DCA investment details below:"
-                )
-              }
               data={
                 !isCreatingSip && !error ? {
                   Token: dcaConfig.token.toUpperCase(),
@@ -217,7 +205,6 @@ export default function DCAPage() {
                   "Total Investment": `$${totalAmount}`,
                 } : undefined
               }
-              disableActions={isCreatingSip}
             />
 
             <footer className="px-6 sm:px-20 py-8 border-t border-gray-100">

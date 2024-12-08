@@ -38,7 +38,7 @@ export default function LandingPage() {
   const { logout } = usePrivy()
   const [walletError, setWalletError] = useState<string | null>(null);
 
-  const { loading, error, execute: createWalletFn } = useApi<WalletResponse>(createWallet);
+  const { loading, execute: createWalletFn } = useApi<WalletResponse>(createWallet);
 
   const { login } = useLogin({
     onComplete: async () => {

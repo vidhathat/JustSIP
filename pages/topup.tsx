@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import Head from "next/head";
-import { parseEther, parseUnits } from "ethers";
+import { parseUnits } from "ethers";
 import { createWalletClient, custom } from "viem";
 import { base } from "viem/chains";
 import { getTokenBalancesForWallet, getWalletByAddress } from "../services/api";
