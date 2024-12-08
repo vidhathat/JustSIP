@@ -1,14 +1,67 @@
-import { useLogin } from "@privy-io/react-auth";
+import { useLogin, usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { useApi } from "../hooks/useApi";
+import { useState } from "react";
+import { createWallet } from "../services/api";
+
+interface Balance {
+  wallet_id: string;
+  eth_balance: number;
+  cbbtc_balance: number;
+  usd_balance: number;
+  updated_at: string;
+}
+
+interface User {
+  id: number;
+  wallet_address: string;
+  mpc_wallet_address: string;
+  wallet_id: string;
+  name: string;
+  image_url: string;
+  created_at: string;
+}
+
+interface WalletResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: User;
+    balance: Balance;
+  };
+}
 
 export default function LandingPage() {
   const router = useRouter();
+  const { logout } = usePrivy()
+  const [walletError, setWalletError] = useState<string | null>(null);
+
+  const { loading, error, execute: createWalletFn } = useApi<WalletResponse>(createWallet);
+
   const { login } = useLogin({
-    onComplete: () => router.push("/dca"),
+    onComplete: async () => {
+      try {
+        const result = await createWalletFn();
+        if (result && result.success) {
+          router.push("/dashboard");
+        } else {
+          setWalletError(result?.message || "Failed to initialize wallet. Please try again.");
+          logout()
+        }
+      } catch (err) {
+        console.error('Wallet creation error:', err);
+        setWalletError(err instanceof Error ? err.message : "An error occurred while connecting your wallet.");
+        logout()
+      }
+    },
   });
 
+  const handleConnect = () => {
+    setWalletError(null);
+    login();
+  };
 
   return (
     <>
@@ -30,12 +83,25 @@ export default function LandingPage() {
               />
               <div className="text-2xl font-bold text-[#0052FF]">JustSIP</div>
             </div>
-            <button
-              onClick={login}
-              className="bg-[#0052FF] hover:bg-[#0052FF]/90 text-white px-6 py-2 rounded-full transition-all font-medium"
-            >
-              Connect Wallet
-            </button>
+            <div className="flex flex-col items-end">
+              <button
+                onClick={handleConnect}
+                disabled={loading}
+                className={`bg-[#0052FF] hover:bg-[#0052FF]/90 text-white px-6 py-2 rounded-full transition-all font-medium flex items-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              >
+                {loading ? (
+                  <>
+                    <span className="animate-spin">⚡</span>
+                    Connecting...
+                  </>
+                ) : (
+                  'Connect Wallet'
+                )}
+              </button>
+              {walletError && (
+                <p className="text-red-500 text-sm mt-2">{walletError}</p>
+              )}
+            </div>
           </div>
         </nav>
 
@@ -52,10 +118,18 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={login}
-                className="px-8 py-4 bg-[#0052FF] hover:bg-[#0052FF]/90 text-white rounded-full text-lg font-medium transition-all"
+                onClick={handleConnect}
+                disabled={loading}
+                className={`px-8 py-4 bg-[#0052FF] hover:bg-[#0052FF]/90 text-white rounded-full text-lg font-medium transition-all flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                Start Investing
+                {loading ? (
+                  <>
+                    <span className="animate-spin">⚡</span>
+                    Connecting...
+                  </>
+                ) : (
+                  'Start Investing'
+                )}
               </button>
               <a
                 href="#how-it-works"
@@ -64,6 +138,9 @@ export default function LandingPage() {
                 Learn More
               </a>
             </div>
+            {walletError && (
+              <p className="text-red-500 mt-4">{walletError}</p>
+            )}
           </div>
         </section>
 
@@ -152,7 +229,7 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="px-6 sm:px-20 py-20 bg-gray-50">
+        <section className="px-6 sm:px-20 py-20 bg-gray-50 flex flex-col items-center justify-center">
           <h2 className="text-3xl font-bold text-center mb-6 text-gray-900">
             Ready to Start Your Investment Journey?
           </h2>
@@ -161,10 +238,18 @@ export default function LandingPage() {
           </p>
           <div className="text-center">
             <button
-              onClick={login}
-              className="px-8 py-4 bg-[#0052FF] hover:bg-[#0052FF]/90 text-white rounded-full text-lg font-medium transition-all"
+              onClick={handleConnect}
+              disabled={loading}
+              className={`px-8 py-4 bg-[#0052FF] hover:bg-[#0052FF]/90 text-white rounded-full text-lg font-medium transition-all flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              Get Started Now
+              {loading ? (
+                <>
+                  <span className="animate-spin">⚡</span>
+                  Connecting...
+                </>
+              ) : (
+                'Get Started Now'
+              )}
             </button>
           </div>
         </section>

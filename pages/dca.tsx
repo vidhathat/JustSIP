@@ -3,23 +3,28 @@ import { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import Image from "next/image";
-
+import ActionModal from "../components/ActionModal";
+import { createSip, getWalletByAddress } from "../services/api";
+import Navigation from "../components/Navigation";
 
 interface DCAConfig {
-  frequency: 'days' | 'weeks' | 'months';
+  frequency: 'daily' | 'weekly' | 'monthly';
   duration: number; // in months
   amountPerInvestment: number;
-  token: string;
+  token: 'eth' | 'cbbtc';
 }
 
 export default function DCAPage() {
   const router = useRouter();
-  const { ready, authenticated } = usePrivy();
+  const { ready, authenticated, user } = usePrivy();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isCreatingSip, setIsCreatingSip] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [dcaConfig, setDcaConfig] = useState<DCAConfig>({
-    frequency: 'months',
+    frequency: 'monthly',
     duration: 12, // default 12 months
     amountPerInvestment: 100,
-    token: 'ETH'
+    token: 'eth'
   });
 
   useEffect(() => {
@@ -29,16 +34,11 @@ export default function DCAPage() {
   }, [ready, authenticated, router]);
 
   const calculateTotalInvestment = () => {
-    const frequencyMultiplier = {
-      days: 1,
-      weeks: 1,
-      months: 1
-    };
-    
-    const investmentsPerMonth = frequencyMultiplier[dcaConfig.frequency];
-    const totalMonths = dcaConfig.duration;
-    const totalInvestments = totalMonths * investmentsPerMonth;
-    const totalAmount = totalMonths * dcaConfig.amountPerInvestment;
+    // For daily: duration is in days
+    // For weekly: duration is in weeks
+    // For monthly: duration is in months
+    const totalInvestments = dcaConfig.duration;
+    const totalAmount = dcaConfig.duration * dcaConfig.amountPerInvestment;
     
     return {
       totalAmount,
@@ -50,7 +50,40 @@ export default function DCAPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('DCA Configuration:', dcaConfig);
+    setError(null);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmDCA = async () => {
+    try {
+      setError(null);
+      setIsCreatingSip(true);
+
+      if (!user?.wallet?.address) {
+        throw new Error("Wallet address not found");
+      }
+
+      // First get the wallet details
+      const walletResponse = await getWalletByAddress(user.wallet.address);
+      if (!walletResponse.success || !walletResponse.data.user.wallet_id) {
+        throw new Error("Failed to get wallet details");
+      }
+
+      // Create SIP with the wallet_id from the response
+      await createSip({
+        wallet_id: walletResponse.data.user.wallet_id,
+        from_token: "usdc",
+        to_token: dcaConfig.token,
+        amount: dcaConfig.amountPerInvestment,
+        frequency: dcaConfig.frequency,
+      });
+
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Error creating SIP:', error);
+      setError(error instanceof Error ? error.message : 'Failed to create SIP. Please try again.');
+      setIsCreatingSip(false);
+    }
   };
 
   return (
@@ -62,25 +95,7 @@ export default function DCAPage() {
       <main className="min-h-screen bg-white">
         {ready && authenticated ? (
           <>
-            <nav className="px-6 py-4 sm:px-20 border-b border-gray-100">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Image 
-                    src="/images/baselogo.png" 
-                    alt="Base Logo" 
-                    width={32} 
-                    height={32}
-                  />
-                  <div className="text-2xl font-bold text-[#0052FF]">JustSIP</div>
-                </div>
-                <button
-                  onClick={() => router.push('/dashboard')}
-                  className="bg-[#0052FF] hover:bg-[#0052FF]/90 text-white px-6 py-2 rounded-full transition-all font-medium"
-                >
-                  Dashboard
-                </button>
-              </div>
-            </nav>
+            <Navigation />
 
             <div className="px-6 sm:px-20 py-12">
               <div className="max-w-2xl mx-auto">
@@ -94,13 +109,11 @@ export default function DCAPage() {
                       </label>
                       <select
                         value={dcaConfig.token}
-                        onChange={(e) => setDcaConfig({...dcaConfig, token: e.target.value})}
+                        onChange={(e) => setDcaConfig({...dcaConfig, token: e.target.value as DCAConfig['token']})}
                         className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
                       >
-                        <option value="ETH">Ethereum (ETH)</option>
-                        <option value="USDC">USD Coin (USDC)</option>
-                        <option value="WBTC">Wrapped Bitcoin (WBTC)</option>
-                        <option value="cbETH">Coinbase ETH (cbETH)</option>
+                        <option value="eth">Ethereum (ETH)</option>
+                        <option value="cbbtc">Coinbase BTC (cbBTC)</option>
                       </select>
                     </div>
                     <div>
@@ -112,15 +125,15 @@ export default function DCAPage() {
                         onChange={(e) => setDcaConfig({...dcaConfig, frequency: e.target.value as DCAConfig['frequency']})}
                         className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
                       >
-                        <option value="months">Monthly</option>
-                        <option value="weeks">Weekly</option>
-                        <option value="days">Daily</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="daily">Daily</option>
                       </select>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700">
-                        Investment Duration ({dcaConfig.frequency})
+                        Investment Duration ({dcaConfig.frequency === 'daily' ? 'days' : dcaConfig.frequency === 'weekly' ? 'weeks' : 'months'})
                       </label>
                       <input
                         type="number"
@@ -137,7 +150,7 @@ export default function DCAPage() {
                       </label>
                       <input
                         type="number"
-                        min="1"
+                        pattern="[0-9]*[.]?[0-9]*"
                         value={dcaConfig.amountPerInvestment}
                         onChange={(e) => setDcaConfig({...dcaConfig, amountPerInvestment: Number(e.target.value)})}
                         className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
@@ -172,6 +185,40 @@ export default function DCAPage() {
                 </div>
               </div>
             </div>
+
+            <ActionModal
+              isOpen={showConfirmModal}
+              onClose={() => {
+                setShowConfirmModal(false);
+                setError(null);
+                setIsCreatingSip(false);
+              }}
+              onConfirm={handleConfirmDCA}
+              type="edit"
+              title="Confirm DCA Investment"
+              message={
+                error ? (
+                  <div className="text-red-600 mb-4">{error}</div>
+                ) : isCreatingSip ? (
+                  <div className="flex flex-col items-center justify-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0052FF] mb-2"></div>
+                    <p className="text-gray-600">Creating your DCA investment...</p>
+                  </div>
+                ) : (
+                  "Please review your DCA investment details below:"
+                )
+              }
+              data={
+                !isCreatingSip && !error ? {
+                  Token: dcaConfig.token.toUpperCase(),
+                  Frequency: dcaConfig.frequency,
+                  "Amount per Investment": `$${dcaConfig.amountPerInvestment}`,
+                  Duration: `${dcaConfig.duration} ${dcaConfig.frequency === 'daily' ? 'days' : dcaConfig.frequency === 'weekly' ? 'weeks' : 'months'}`,
+                  "Total Investment": `$${totalAmount}`,
+                } : undefined
+              }
+              disableActions={isCreatingSip}
+            />
 
             <footer className="px-6 sm:px-20 py-8 border-t border-gray-100">
               <div className="flex justify-between items-center">
