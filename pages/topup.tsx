@@ -21,10 +21,13 @@ export default function TopupPage() {
   const [usdBalance, setUsdBalance] = useState<number | null>(null);
   const [topUpAmount, setTopUpAmount] = useState<number>(0);
   const [mpcWalletAddress, setMpcWalletAddress] = useState<string | null>(null);
+  const [walletData, setWalletData] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const { ready, authenticated, user, logout } = usePrivy();
   const { wallets } = useWallets();
+
+  console.log("MPC Wallet Address", mpcWalletAddress);
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -44,6 +47,7 @@ export default function TopupPage() {
       const walletData = await getWalletByAddress(walletAddress);
       const mpcWalletAddress = walletData.data.user.mpc_wallet_address;
       await fetchBalances(mpcWalletAddress);
+      setWalletData(walletData);
     } catch (error) {
       console.error("Error fetching wallet data:", error);
     } finally {
@@ -95,9 +99,7 @@ export default function TopupPage() {
         throw new Error("No address found");
       }
 
-      const walletData = await getWalletByAddress(address);
-      const mpcWalletAddress = walletData.data.user.mpc_wallet_address;
-      setMpcWalletAddress(mpcWalletAddress);
+      const mpcWalletAddress = walletData?.data.user.mpc_wallet_address;
 
       const usdcDecimals = 6;
       const topUpAmountInUSDC = parseUnits(topUpAmount.toString(), usdcDecimals);
@@ -164,7 +166,7 @@ export default function TopupPage() {
                           Your USD balance is low: ${usdBalance.toFixed(2)}
                         </p>
                         <p>
-                          Please send some ETH as well for gas - ({mpcWalletAddress})
+                          Please send some ETH as well for gas - ({walletData?.data.user.mpc_wallet_address})
                         </p>
                         <p>we are working on a gasless solution</p>
                         <input
