@@ -19,6 +19,7 @@ export default function TopupPage() {
   const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
   const [usdBalance, setUsdBalance] = useState<number | null>(null);
   const [topUpAmount, setTopUpAmount] = useState<number>(0);
+  const [mpcWalletAddress, setMpcWalletAddress] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const { ready, authenticated, user, logout } = usePrivy();
@@ -95,6 +96,7 @@ export default function TopupPage() {
 
       const walletData = await getWalletByAddress(address);
       const mpcWalletAddress = walletData.data.user.mpc_wallet_address;
+      setMpcWalletAddress(mpcWalletAddress);
 
       const usdcDecimals = 6;
       const topUpAmountInUSDC = parseUnits(topUpAmount.toString(), usdcDecimals);
@@ -161,7 +163,7 @@ export default function TopupPage() {
                           Your USD balance is low: ${usdBalance.toFixed(2)}
                         </p>
                         <p>
-                          Please send some ETH as well for gas - ({wallets[0]?.address})
+                          Please send some ETH as well for gas - ({mpcWalletAddress})
                         </p>
                         <p>we are working on a gasless solution</p>
                         <input
