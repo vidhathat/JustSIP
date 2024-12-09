@@ -148,7 +148,7 @@ export default function TopupPage() {
             </nav>
 
             <div className="px-6 sm:px-20 py-12">
-              <div className="max-w-2xl mx-auto">
+              <div className="max-w-3xl mx-auto">
                 <h1 className="text-3xl font-bold mb-8 text-gray-900">Your Wallet</h1>
                 
                 {loading ? (
@@ -156,10 +156,14 @@ export default function TopupPage() {
                 ) : (
                   <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
                     {usdBalance !== null && usdBalance < 5 ? (
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center w-full">
                         <p className="text-red-500">
                           Your USD balance is low: ${usdBalance.toFixed(2)}
                         </p>
+                        <p>
+                          Please send some ETH as well for gas - ({wallets[0]?.address})
+                        </p>
+                        <p>we are working on a gasless solution</p>
                         <input
                           type="number"
                           value={topUpAmount}

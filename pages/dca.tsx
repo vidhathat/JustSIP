@@ -153,7 +153,7 @@ export default function DCAPage() {
                         pattern="[0-9]*[.]?[0-9]*"
                         value={dcaConfig.amountPerInvestment}
                         onChange={(e) => setDcaConfig({...dcaConfig, amountPerInvestment: Number(e.target.value)})}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 ntext-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
                       />
                     </div>
 
@@ -162,7 +162,7 @@ export default function DCAPage() {
                       <div className="space-y-2">
                         <p className="text-gray-700">
                           You will invest <span className="font-semibold">${dcaConfig.amountPerInvestment}</span> in {dcaConfig.token} for
-                           <span className="font-semibold"> {dcaConfig.duration} {dcaConfig.frequency}</span>
+                           <span className="font-semibold"> {dcaConfig.duration } {dcaConfig.frequency === 'daily' ? 'days' : dcaConfig.frequency === 'weekly' ? 'weeks' : 'months'}</span>
                         </p>
                         <p className="text-gray-700 font-medium">
                           Total investment amount: <span className="text-[#0052FF] font-bold">${totalAmount}</span>

@@ -41,11 +41,11 @@ export default function LandingPage() {
   const { loading, execute: createWalletFn } = useApi<WalletResponse>(createWallet);
 
   const { login } = useLogin({
-    onComplete: async () => {
+    onComplete: async (user) => {
       try {
-        const result = await createWalletFn();
+        const result = await createWalletFn(user.wallet?.address);
         if (result && result.success) {
-          router.push("/dashboard");
+          router.push("/topup");
         } else {
           setWalletError(result?.message || "Failed to initialize wallet. Please try again.");
           logout()
