@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const BASE_URL = 'https://basedwrapped.xyz';
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'https://basedwrapped.xyz';
+// const BASE_URL = 'http://localhost:8000';
 
 export const SIP_STATUS = {
   ACTIVE: "active",
