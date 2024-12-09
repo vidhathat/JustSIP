@@ -8,6 +8,7 @@ import { base } from "viem/chains";
 import { getTokenBalancesForWallet, getWalletByAddress } from "../services/api";
 import { USDC_ABI, USDC_CONTRACT_ADDRESS } from "../constants/usdc";
 import Loader from "../components/Loader";
+import Link from "next/link";
 
 type TransactionResult = {
   success: boolean;
@@ -138,7 +139,7 @@ export default function TopupPage() {
             <nav className="px-6 py-4 sm:px-20 border-b border-gray-100">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold text-[#0052FF]">JustSIP Dashboard</div>
+                  <Link href="/dashboard" className="text-2xl font-bold text-[#0052FF]">JustSIP Dashboard</Link>
                 </div>
                 <button
                   onClick={logout}
