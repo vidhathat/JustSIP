@@ -7,6 +7,7 @@ import ActionModal from "../components/ActionModal";
 import { createSip, getWalletByAddress, getTokenBalancesForWallet } from "../services/api";
 import Navigation from "../components/Navigation";
 import { useWallet } from '../contexts/WalletContext';
+import Link from "next/link";
 
 interface DCAConfig {
   frequency: 'daily' | 'weekly' | 'monthly';
@@ -49,6 +50,8 @@ export default function DCAPage() {
   };
 
   const { totalAmount } = calculateTotalInvestment();
+
+  const isBalanceSufficient = usdBalance >= totalAmount;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,6 +186,19 @@ export default function DCAPage() {
                         <p className="text-gray-700 font-medium">
                           Total investment amount: <span className="text-[#0052FF] font-bold">${totalAmount}</span>
                         </p>
+                        {!isBalanceSufficient && (
+                          <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-xl">
+                            <p className="text-red-600">
+                              Insufficient balance. You need ${totalAmount - usdBalance} more USDC.
+                            </p>
+                            <Link 
+                              href="/topup"
+                              className="text-[#0052FF] hover:underline mt-2 inline-block"
+                            >
+                              Top up your wallet →
+                            </Link>
+                          </div>
+                        )}
                       </div>
                       <div className="mt-4 text-sm text-gray-500">
                         <p>• Transactions will be executed automatically</p>
@@ -193,9 +209,14 @@ export default function DCAPage() {
 
                     <button
                       type="submit"
-                      className="w-full bg-[#0052FF] hover:bg-[#0052FF]/90 text-white font-medium py-4 px-6 rounded-xl transition-all"
+                      disabled={!isBalanceSufficient}
+                      className={`w-full bg-[#0052FF] text-white font-medium py-4 px-6 rounded-xl transition-all ${
+                        !isBalanceSufficient 
+                          ? 'opacity-50 cursor-not-allowed' 
+                          : 'hover:bg-[#0052FF]/90'
+                      }`}
                     >
-                      Start DCA Investment
+                      {isBalanceSufficient ? 'Start DCA Investment' : 'Insufficient Balance'}
                     </button>
                   </form>
                 </div>
