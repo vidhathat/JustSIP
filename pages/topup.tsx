@@ -9,7 +9,8 @@ import { getTokenBalancesForWallet, getWalletByAddress } from "../services/api";
 import { USDC_ABI, USDC_CONTRACT_ADDRESS } from "../constants/usdc";
 import Loader from "../components/Loader";
 import Link from "next/link";
-
+import Navigation from "../components/Navigation";
+import { useWallet } from "../contexts/WalletContext";
 type TransactionResult = {
   success: boolean;
   transactionHash?: string;
@@ -17,54 +18,23 @@ type TransactionResult = {
 };
 
 export default function TopupPage() {
-  const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
-  const [usdBalance, setUsdBalance] = useState<number | null>(null);
+  const { 
+    usdBalance, 
+    mpcWalletAddress, 
+    walletData,
+    refreshBalance 
+  } = useWallet();
   const [topUpAmount, setTopUpAmount] = useState<number>(0);
-  const [mpcWalletAddress, setMpcWalletAddress] = useState<string | null>(null);
-  const [walletData, setWalletData] = useState<any | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
   const router = useRouter();
-  const { ready, authenticated, user, logout } = usePrivy();
+  const { ready, authenticated, logout } = usePrivy();
   const { wallets } = useWallets();
-
-  console.log("MPC Wallet Address", mpcWalletAddress);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (ready && !authenticated) {
       router.push("/");
-    } else if (authenticated && user) {
-      if (user.wallet && user.wallet.address) {
-        fetchWalletData(user.wallet.address);
-      } else {
-        console.error("User wallet address is undefined");
-      }
     }
-  }, [ready, authenticated, router, user]);
-
-  const fetchWalletData = async (walletAddress: string) => {
-    try {
-      setLoading(true);
-      const walletData = await getWalletByAddress(walletAddress);
-      const mpcWalletAddress = walletData.data.user.mpc_wallet_address;
-      await fetchBalances(mpcWalletAddress);
-      setWalletData(walletData);
-    } catch (error) {
-      console.error("Error fetching wallet data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchBalances = async (mpcWalletAddress: string) => {
-    try {
-      const response = await getTokenBalancesForWallet(mpcWalletAddress);
-      if (response.success) {
-        setUsdBalance(response.data.balances.usd_balance);
-      }
-    } catch (error) {
-      console.error("Error fetching balances:", error);
-    }
-  };
+  }, [ready, authenticated, router]);
 
   const initializeWallet = async () => {
     if (!wallets || wallets.length === 0) {
@@ -98,8 +68,6 @@ export default function TopupPage() {
       if (!address) {
         throw new Error("No address found");
       }
-
-      const mpcWalletAddress = walletData?.data.user.mpc_wallet_address;
 
       const usdcDecimals = 6;
       const topUpAmountInUSDC = parseUnits(topUpAmount.toString(), usdcDecimals);
@@ -138,19 +106,7 @@ export default function TopupPage() {
       <main className="min-h-screen bg-white">
         {ready && authenticated ? (
           <>
-            <nav className="px-6 py-4 sm:px-20 border-b border-gray-100">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Link href="/dashboard" className="text-2xl font-bold text-[#0052FF]">JustSIP Dashboard</Link>
-                </div>
-                <button
-                  onClick={logout}
-                  className="bg-[#0052FF] hover:bg-[#0052FF]/90 text-white px-6 py-2 rounded-full transition-all font-medium"
-                >
-                  Logout
-                </button>
-              </div>
-            </nav>
+            <Navigation />
 
             <div className="px-6 sm:px-20 py-12">
               <div className="max-w-3xl mx-auto">
@@ -166,7 +122,7 @@ export default function TopupPage() {
                           Your USD balance is low: ${usdBalance.toFixed(2)}
                         </p>
                         <p>
-                          Please send some ETH as well for gas - ({walletData?.data.user.mpc_wallet_address})
+                          Please send some ETH as well for gas - ({usdBalance})
                         </p>
                         <p>we are working on a gasless solution</p>
                         <input

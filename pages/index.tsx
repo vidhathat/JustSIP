@@ -45,7 +45,7 @@ export default function LandingPage() {
       try {
         const result = await createWalletFn(user.wallet?.address);
         if (result && result.success) {
-          router.push("/topup");
+          router.push("/dca");
         } else {
           setWalletError(result?.message || "Failed to initialize wallet. Please try again.");
           logout()

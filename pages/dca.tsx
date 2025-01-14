@@ -4,8 +4,9 @@ import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import Image from "next/image";
 import ActionModal from "../components/ActionModal";
-import { createSip, getWalletByAddress } from "../services/api";
+import { createSip, getWalletByAddress, getTokenBalancesForWallet } from "../services/api";
 import Navigation from "../components/Navigation";
+import { useWallet } from '../contexts/WalletContext';
 
 interface DCAConfig {
   frequency: 'daily' | 'weekly' | 'monthly';
@@ -26,6 +27,7 @@ export default function DCAPage() {
     amountPerInvestment: 100,
     token: 'eth'
   });
+  const { usdBalance, isLoadingBalance } = useWallet();
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -54,6 +56,8 @@ export default function DCAPage() {
     setShowConfirmModal(true);
   };
 
+
+  console.log('balance', usdBalance)
   const handleConfirmDCA = async () => {
     try {
       setError(null);
@@ -103,7 +107,19 @@ export default function DCAPage() {
                 
                 <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
                   <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
+                    <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Available Balance:</span>
+                        <span className="text-lg font-semibold text-gray-900">
+                          {isLoadingBalance ? (
+                            <span className="animate-pulse">Loading...</span>
+                          ) : (
+                            `$${usdBalance.toFixed(2)}`
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700">
                         Select Token
                       </label>
