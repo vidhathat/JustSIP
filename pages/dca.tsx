@@ -97,7 +97,7 @@ export default function DCAPage() {
   return (
     <>
       <Head>
-        <title>Setup DCA - JustSIP</title>
+        <title>Setup DCA - Only DCA</title>
       </Head>
 
       <main className="min-h-screen bg-white">

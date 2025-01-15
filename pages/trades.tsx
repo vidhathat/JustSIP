@@ -94,7 +94,7 @@ export default function TradesPage() {
   return (
     <>
       <Head>
-        <title>Trade History - JustSIP</title>
+        <title>Trade History - Only DCA</title>
       </Head>
 
       <main className="min-h-screen bg-white">

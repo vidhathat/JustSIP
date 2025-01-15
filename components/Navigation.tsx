@@ -29,7 +29,7 @@ export default function Navigation() {
             width={32} 
             height={32}
           />
-          <div className="text-2xl font-bold text-[#0052FF]">JustSIP</div>
+          <div className="text-2xl font-bold text-[#0052FF]">Only DCA</div>
         </div>
 
         {/* Desktop Navigation */}

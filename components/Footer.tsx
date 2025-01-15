@@ -16,7 +16,7 @@ export default function Footer() {
           <span className="font-medium text-gray-600">Built on Base</span>
         </div>
         <div className="text-sm text-gray-500">
-          © {currentYear} JustSIP. All rights reserved.
+          © {currentYear} Only DCA. All rights reserved.
         </div>
       </div>
     </footer>

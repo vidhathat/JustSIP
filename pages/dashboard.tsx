@@ -189,7 +189,7 @@ export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>Dashboard - JustSIP</title>
+        <title>Dashboard - Only DCA</title>
       </Head>
 
       <main className="min-h-screen bg-white">

@@ -68,8 +68,8 @@ export default function LandingPage() {
   return (
     <>
       <Head>
-        <title>JustSIP - Automated DCA on Base</title>
-        <meta name="description" content="Simple, automated dollar-cost averaging on Base. Start your crypto investment journey with JustSIP." />
+        <title>Only DCA - Automated DCA on Base</title>
+        <meta name="description" content="Simple, automated dollar-cost averaging on Base. Start your crypto investment journey with Only DCA." />
       </Head>
 
       <main className="min-h-screen relative">
@@ -86,7 +86,7 @@ export default function LandingPage() {
                   width={32} 
                   height={32}
                 />
-                <div className="text-2xl font-bold text-[#FF8A00]">JustSIP</div>
+                <div className="text-2xl font-bold text-[#FF8A00]">Only DCA</div>
               </div>
               <div className="flex flex-col items-end">
                 <button
@@ -160,7 +160,7 @@ export default function LandingPage() {
                 <div className="text-4xl mb-4">🎯</div>
                 <h3 className="text-xl font-bold mb-3 text-white">Automated Investing</h3>
                 <p className="text-gray-400">
-                  Set up recurring investments and let JustSIP handle the rest. No more timing the market.
+                  Set up recurring investments and let Only DCA handle the rest. No more timing the market.
                 </p>
               </div>
               <div className="bg-black p-8 rounded-xl border border-gray-800">
@@ -183,7 +183,7 @@ export default function LandingPage() {
           {/* How It Works */}
           <section id="how-it-works" className="px-6 sm:px-20 py-20">
             <h2 className="text-3xl font-bold text-center mb-12 text-white">
-              How JustSIP Works
+              How Only DCA Works
             </h2>
             <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-12">
               <div className="space-y-8">
@@ -250,7 +250,7 @@ export default function LandingPage() {
                 <span className="font-medium text-gray-400">Built on Base</span>
               </div>
               <div className="text-sm text-gray-500">
-                © {new Date().getFullYear()} JustSIP. All rights reserved.
+                © {new Date().getFullYear()} Only DCA. All rights reserved.
               </div>
             </div>
           </footer>

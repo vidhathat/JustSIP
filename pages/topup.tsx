@@ -101,8 +101,8 @@ export default function TopupPage() {
   return (
     <>
       <Head>
-        <title>JustSIP - Dashboard</title>
-        <meta name="description" content="Manage your investments and wallet on JustSIP." />
+        <title>Only DCA - Dashboard</title>
+        <meta name="description" content="Manage your investments and wallet on Only DCA." />
       </Head>
 
       <main className="min-h-screen bg-white">
