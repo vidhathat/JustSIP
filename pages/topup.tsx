@@ -11,6 +11,8 @@ import Loader from "../components/Loader";
 import Link from "next/link";
 import Navigation from "../components/Navigation";
 import { useWallet } from "../contexts/WalletContext";
+import Footer from "../components/Footer";
+
 type TransactionResult = {
   success: boolean;
   transactionHash?: string;
@@ -157,15 +159,7 @@ export default function TopupPage() {
                 )}
               </div>
             </div>
-
-            <footer className="absolute bottom-0 w-full px-6 sm:px-20 py-8 border-t border-gray-100">
-              <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-600">Built on Base</span>
-                <div className="text-sm text-gray-500">
-                  © 2024 JustSIP. All rights reserved.
-                </div>
-              </div>
-            </footer>
+            <Footer />
           </>
         ) : null}
       </main>

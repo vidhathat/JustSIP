@@ -9,6 +9,7 @@ import { getTokenName } from "../constants/utils";
 import ActionButton from "../components/ActionButton";
 import ActionModal from "../components/ActionModal";
 import Navigation from "../components/Navigation";
+import Footer from "../components/Footer";
 
 type Sip = {
   id: number;
@@ -326,15 +327,7 @@ export default function Dashboard() {
               title="Delete SIP"
               message="Are you sure you want to delete this SIP? This action cannot be undone and all scheduled investments will be cancelled."
             />
-
-            <footer className="absolute bottom-0 w-full px-6 sm:px-20 py-8 border-t border-gray-100">
-              <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-600">Built on Base</span>
-                <div className="text-sm text-gray-500">
-                  © 2024 JustSIP. All rights reserved.
-                </div>
-              </div>
-            </footer>
+            <Footer />
           </>
         ) : null}
       </main>

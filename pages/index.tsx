@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useApi } from "../hooks/useApi";
 import { useState } from "react";
 import { createWallet } from "../services/api";
-
+import Footer from "../components/Footer";
 interface Balance {
   wallet_id: string;
   eth_balance: number;
@@ -255,22 +255,7 @@ export default function LandingPage() {
         </section>
 
         {/* Footer */}
-        <footer className="px-6 sm:px-20 py-8 border-t border-gray-100">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Image 
-                src="/images/baselogo.png" 
-                alt="Base Logo" 
-                width={24} 
-                height={24}
-              />
-              <span className="font-medium text-gray-600">Built on Base</span>
-            </div>
-            <div className="text-sm text-gray-500">
-              © 2024 JustSIP. All rights reserved.
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </main>
     </>
   );

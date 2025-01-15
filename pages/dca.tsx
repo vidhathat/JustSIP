@@ -8,6 +8,7 @@ import { createSip, getWalletByAddress, getTokenBalancesForWallet } from "../ser
 import Navigation from "../components/Navigation";
 import { useWallet } from '../contexts/WalletContext';
 import Link from "next/link";
+import Footer from "../components/Footer";
 
 interface DCAConfig {
   frequency: 'daily' | 'weekly' | 'monthly';
@@ -244,22 +245,7 @@ export default function DCAPage() {
               }
             />
 
-            <footer className="px-6 sm:px-20 py-8 border-t border-gray-100">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Image 
-                    src="/images/baselogo.png" 
-                    alt="Base Logo" 
-                    width={24} 
-                    height={24}
-                  />
-                  <span className="font-medium text-gray-600">Built on Base</span>
-                </div>
-                <div className="text-sm text-gray-500">
-                  © 2024 JustSIP. All rights reserved.
-                </div>
-              </div>
-            </footer>
+            <Footer />
           </>
         ) : null}
       </main>
