@@ -193,15 +193,15 @@ export default function Dashboard() {
         <title>Dashboard - Only DCA</title>
       </Head>
 
-      <main className="min-h-screen relative">
+      <main className="min-h-screen relative flex flex-col">
         <DotBackground />
         
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-col flex-grow">
           {ready && authenticated ? (
             <>
               <Navigation />
 
-              <div className="px-6 sm:px-12 py-12">
+              <div className="px-6 sm:px-12 py-12 flex-grow">
                 <div className="max-w-8xl mx-auto">
                   {actionLoading && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

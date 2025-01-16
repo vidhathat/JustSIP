@@ -106,10 +106,10 @@ export default function TopupPage() {
         <meta name="description" content="Manage your investments and wallet on Only DCA." />
       </Head>
 
-      <main className="min-h-screen relative">
+      <main className="min-h-screen relative flex flex-col">
         <DotBackground />
         
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-col flex-grow">
           {ready && authenticated ? (
             <>
               <Navigation />
