@@ -10,6 +10,7 @@ import ActionButton from "../components/ActionButton";
 import ActionModal from "../components/ActionModal";
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
+import DotBackground from "../components/DotBackground";
 
 type Sip = {
   id: number;
@@ -192,144 +193,148 @@ export default function Dashboard() {
         <title>Dashboard - Only DCA</title>
       </Head>
 
-      <main className="min-h-screen bg-white">
-        {ready && authenticated ? (
-          <>
-            <Navigation />
+      <main className="min-h-screen relative">
+        <DotBackground />
+        
+        <div className="relative z-10">
+          {ready && authenticated ? (
+            <>
+              <Navigation />
 
-            <div className="px-6 sm:px-12 py-12">
-              <div className="max-w-8xl mx-auto">
-                {actionLoading && (
-                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white p-4 rounded-lg">
-                      <Loader />
-                      <p className="text-center mt-2">Processing...</p>
+              <div className="px-6 sm:px-12 py-12">
+                <div className="max-w-8xl mx-auto">
+                  {actionLoading && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                      <div className="bg-gray-900 p-4 rounded-lg">
+                        <Loader />
+                        <p className="text-center mt-2 text-white">Processing...</p>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <h1 className="text-3xl font-bold mb-8 text-gray-900">My SIPs</h1>
-                
-                <div className="overflow-x-auto w-full">
-                  <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From Token</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To Token</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Frequency</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Execution</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {sips.map((sip) => (
-                        <tr key={sip.id}>
-                          <td className="px-6 py-4 whitespace-nowrap">{sip.id}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">{getTokenName(sip.from_token)}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">{getTokenName(sip.to_token)}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {editId === sip.id ? (
-                              <input
-                                type="text"
-                                pattern="[0-9]*[.]?[0-9]*"
-                                value={editAmount}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  // Allow empty string, numbers, and one decimal point
-                                  if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                                    setEditAmount(value);
-                                  }
-                                }}
-                                className="border rounded px-2 py-1 w-32"
-                              />
-                            ) : (
-                              parseFloat(sip.amount.toString()).toFixed(6)
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {editId === sip.id ? (
-                              <select
-                                value={editFrequency}
-                                onChange={(e) => setEditFrequency(e.target.value)}
-                                className="border rounded px-2 py-1"
-                              >
-                                <option value="daily">Daily</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="monthly">Monthly</option>
-                              </select>
-                            ) : (
-                              sip.frequency
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">{moment(sip.next_execution).format("DD MMM YY")}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {editId === sip.id ? (
-                              <select
-                                value={editStatus}
-                                onChange={(e) => setEditStatus(e.target.value)}
-                                className="border rounded px-2 py-1"
-                              >
-                                <option value="active">Active</option>
-                                <option value="paused">Paused</option>
-                                <option value="completed">Completed</option>
-                                <option value="insufficient_funds">Insufficient Funds</option>
-                              </select>
-                            ) : (
-                              getStatusBadge(sip.status)
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap flex items-center gap-2">
-                            <ActionButton 
-                              type="edit" 
-                              onClick={() => handleEdit(sip)} 
-                              isEditing={editId === sip.id} 
-                            />
-                            <ActionButton type="delete" onClick={() => handleDelete(sip)} />
-                          </td>
+                  <h1 className="text-3xl font-bold mb-8 text-white">My SIPs</h1>
+
+                  <div className="overflow-x-auto w-full">
+                    <table className="min-w-full bg-gray-900/50 border border-gray-800 rounded-lg shadow-sm overflow-hidden backdrop-blur-sm">
+                      <thead className="bg-black/50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">ID</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">From Token</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">To Token</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Amount</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Frequency</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Next Execution</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-gray-800">
+                        {sips.map((sip) => (
+                          <tr key={sip.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-white">{sip.id}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-white">{getTokenName(sip.from_token)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-white">{getTokenName(sip.to_token)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-white">
+                              {editId === sip.id ? (
+                                <input
+                                  type="text"
+                                  pattern="[0-9]*[.]?[0-9]*"
+                                  value={editAmount}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    // Allow empty string, numbers, and one decimal point
+                                    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                      setEditAmount(value);
+                                    }
+                                  }}
+                                  className="border rounded px-2 py-1 w-32 bg-gray-900 text-white"
+                                />
+                              ) : (
+                                parseFloat(sip.amount.toString()).toFixed(6)
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-white">
+                              {editId === sip.id ? (
+                                <select
+                                  value={editFrequency}
+                                  onChange={(e) => setEditFrequency(e.target.value)}
+                                  className="border rounded px-2 py-1"
+                                >
+                                  <option value="daily">Daily</option>
+                                  <option value="weekly">Weekly</option>
+                                  <option value="monthly">Monthly</option>
+                                </select>
+                              ) : (
+                                sip.frequency
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-white">{moment(sip.next_execution).format("DD MMM YY")}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-white">
+                              {editId === sip.id ? (
+                                <select
+                                  value={editStatus}
+                                  onChange={(e) => setEditStatus(e.target.value)}
+                                  className="border rounded px-2 py-1"
+                                >
+                                  <option value="active">Active</option>
+                                  <option value="paused">Paused</option>
+                                  <option value="completed">Completed</option>
+                                  <option value="insufficient_funds">Insufficient Funds</option>
+                                </select>
+                              ) : (
+                                getStatusBadge(sip.status)
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap flex items-center gap-2">
+                              <ActionButton 
+                                type="edit" 
+                                onClick={() => handleEdit(sip)} 
+                                isEditing={editId === sip.id} 
+                              />
+                              <ActionButton type="delete" onClick={() => handleDelete(sip)} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <ActionModal
-              isOpen={isEditModalOpen}
-              onClose={() => {
-                setIsEditModalOpen(false);
-                setEditId(null);
-                setError(null);
-              }}
-              onConfirm={handleSaveChanges}
-              type="edit"
-              title="Confirm Changes"
-              message="Please review your SIP changes before saving."
-              data={{
-                amount: `$${parseFloat(editAmount || "0").toFixed(6)}`,
-                frequency: editFrequency,
-                status: editStatus
-              }}
-            />
+              <ActionModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                  setIsEditModalOpen(false);
+                  setEditId(null);
+                  setError(null);
+                }}
+                onConfirm={handleSaveChanges}
+                type="edit"
+                title="Confirm Changes"
+                message="Please review your SIP changes before saving."
+                data={{
+                  amount: `$${parseFloat(editAmount || "0").toFixed(6)}`,
+                  frequency: editFrequency,
+                  status: editStatus
+                }}
+              />
 
-            <ActionModal
-              isOpen={isDeleteModalOpen}
-              onClose={() => {
-                setIsDeleteModalOpen(false);
-                setSipToDelete(null);
-                setError(null);
-              }}
-              onConfirm={handleConfirmDelete}
-              type="delete"
-              title="Delete SIP"
-              message="Are you sure you want to delete this SIP? This action cannot be undone and all scheduled investments will be cancelled."
-            />
-            <Footer />
-          </>
-        ) : null}
+              <ActionModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => {
+                  setIsDeleteModalOpen(false);
+                  setSipToDelete(null);
+                  setError(null);
+                }}
+                onConfirm={handleConfirmDelete}
+                type="delete"
+                title="Delete SIP"
+                message="Are you sure you want to delete this SIP? This action cannot be undone and all scheduled investments will be cancelled."
+              />
+              <Footer />
+            </>
+          ) : null}
+        </div>
       </main>
     </>
   );

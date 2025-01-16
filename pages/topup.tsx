@@ -12,6 +12,7 @@ import Link from "next/link";
 import Navigation from "../components/Navigation";
 import { useWallet } from "../contexts/WalletContext";
 import Footer from "../components/Footer";
+import DotBackground from "../components/DotBackground";
 
 type TransactionResult = {
   success: boolean;
@@ -105,63 +106,67 @@ export default function TopupPage() {
         <meta name="description" content="Manage your investments and wallet on Only DCA." />
       </Head>
 
-      <main className="min-h-screen bg-white">
-        {ready && authenticated ? (
-          <>
-            <Navigation />
+      <main className="min-h-screen relative">
+        <DotBackground />
+        
+        <div className="relative z-10">
+          {ready && authenticated ? (
+            <>
+              <Navigation />
 
-            <div className="px-6 sm:px-20 py-12">
-              <div className="max-w-3xl mx-auto">
-                <h1 className="text-3xl font-bold mb-8 text-gray-900">Your Wallet</h1>
-                
-                {loading ? (
-                  <Loader />
-                ) : (
-                  <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
-                    {usdBalance !== null && usdBalance < 5 ? (
-                      <div className="flex flex-col items-center w-full">
-                        <p className="text-red-500">
-                          Your USD balance is low: ${usdBalance.toFixed(2)}
-                        </p>
-                        <p>
-                          Please send some ETH as well for gas - ({usdBalance})
-                        </p>
-                        <p>we are working on a gasless solution</p>
-                        <input
-                          type="number"
-                          value={topUpAmount}
-                          onChange={(e) => setTopUpAmount(Number(e.target.value))}
-                          className="mt-2 p-2 border rounded"
-                          placeholder="Enter amount to top-up"
-                        />
-                        <button
-                          onClick={handleTopUpUSDC}
-                          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
-                        >
-                          Top Up
-                        </button>
-                      </div>
-                    ) : (
-                      <p>Your USD balance is: ${usdBalance?.toFixed(2)}</p>
-                    )}
-                  </div>
-                )}
+              <div className="px-6 sm:px-20 py-12">
+                <div className="max-w-3xl mx-auto">
+                  <h1 className="text-3xl font-bold mb-8 text-white">Your Wallet</h1>
+                  
+                  {loading ? (
+                    <Loader />
+                  ) : (
+                    <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-800 shadow-sm">
+                      {usdBalance !== null && usdBalance < 5 ? (
+                        <div className="flex flex-col items-center w-full">
+                          <p className="text-red-400">
+                            Your USD balance is low: ${usdBalance.toFixed(2)}
+                          </p>
+                          <p className="text-gray-400">
+                            Please send some ETH as well for gas - ({usdBalance})
+                          </p>
+                          <p className="text-gray-400">we are working on a gasless solution</p>
+                          <input
+                            type="number"
+                            value={topUpAmount}
+                            onChange={(e) => setTopUpAmount(Number(e.target.value))}
+                            className="mt-2 p-2 bg-black/30 border border-gray-800 rounded text-white"
+                            placeholder="Enter amount to top-up"
+                          />
+                          <button
+                            onClick={handleTopUpUSDC}
+                            className="mt-2 bg-[#FF8A00] text-black px-4 py-2 rounded hover:bg-[#FF8A00]/90 transition-all"
+                          >
+                            Top Up
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="text-white">Your USD balance is: ${usdBalance?.toFixed(2)}</p>
+                      )}
+                    </div>
+                  )}
 
-                {transactionResult && (
-                  <details className="w-full mt-4">
-                    <summary className="mt-6 font-bold uppercase text-sm text-gray-600">
-                      Transaction Result
-                    </summary>
-                    <pre className="max-w-4xl bg-slate-700 text-slate-50 font-mono p-4 text-xs sm:text-sm rounded-md mt-2">
-                      {JSON.stringify(transactionResult, null, 2)}
-                    </pre>
-                  </details>
-                )}
+                  {transactionResult && (
+                    <details className="w-full mt-4">
+                      <summary className="mt-6 font-bold uppercase text-sm text-gray-400">
+                        Transaction Result
+                      </summary>
+                      <pre className="max-w-4xl bg-black/30 text-gray-300 font-mono p-4 text-xs sm:text-sm rounded-md mt-2 border border-gray-800">
+                        {JSON.stringify(transactionResult, null, 2)}
+                      </pre>
+                    </details>
+                  )}
+                </div>
               </div>
-            </div>
-            <Footer />
-          </>
-        ) : null}
+              <Footer />
+            </>
+          ) : null}
+        </div>
       </main>
     </>
   );

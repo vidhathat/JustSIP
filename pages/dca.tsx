@@ -9,6 +9,7 @@ import Navigation from "../components/Navigation";
 import { useWallet } from '../contexts/WalletContext';
 import Link from "next/link";
 import Footer from "../components/Footer";
+import DotBackground from "../components/DotBackground";
 
 interface DCAConfig {
   frequency: 'daily' | 'weekly' | 'monthly';
@@ -100,154 +101,137 @@ export default function DCAPage() {
         <title>Setup DCA - Only DCA</title>
       </Head>
 
-      <main className="min-h-screen bg-white">
-        {ready && authenticated ? (
-          <>
-            <Navigation />
+      <main className="min-h-screen relative">
+        <DotBackground />
+        
+        <div className="relative z-10">
+          {ready && authenticated ? (
+            <>
+              <Navigation />
 
-            <div className="px-6 sm:px-20 py-12">
-              <div className="max-w-2xl mx-auto">
-                <h1 className="text-3xl font-bold mb-8 text-gray-900">Setup Periodic Investment</h1>
-                
-                <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="mb-6 p-4 bg-gray-50 rounded-xl">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Available Balance:</span>
-                        <span className="text-lg font-semibold text-gray-900">
-                          {isLoadingBalance ? (
-                            <span className="animate-pulse">Loading...</span>
-                          ) : (
-                            `$${usdBalance.toFixed(2)}`
+              <div className="px-6 sm:px-20 py-12">
+                <div className="max-w-2xl mx-auto">
+                  <h1 className="text-3xl font-bold mb-8 text-white">Setup Periodic Investment</h1>
+                  
+                  <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-800 shadow-sm">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      <div className="mb-6 p-4 bg-black/30 rounded-xl border border-gray-800">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Available Balance:</span>
+                          <span className="text-lg font-semibold text-white">
+                            {isLoadingBalance ? (
+                              <span className="animate-pulse">Loading...</span>
+                            ) : (
+                              `$${usdBalance.toFixed(2)}`
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">
+                          Select Token
+                        </label>
+                        <select
+                          value={dcaConfig.token}
+                          onChange={(e) => setDcaConfig({...dcaConfig, token: e.target.value as DCAConfig['token']})}
+                          className="w-full bg-black/30 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#FF8A00] focus:border-transparent"
+                        >
+                          <option value="eth">Ethereum (ETH)</option>
+                          <option value="cbbtc">Coinbase BTC (cbBTC)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">
+                          Investment Frequency
+                        </label>
+                        <select
+                          value={dcaConfig.frequency}
+                          onChange={(e) => setDcaConfig({...dcaConfig, frequency: e.target.value as DCAConfig['frequency']})}
+                          className="w-full bg-black/30 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#FF8A00] focus:border-transparent"
+                        >
+                          <option value="monthly">Monthly</option>
+                          <option value="weekly">Weekly</option>
+                          <option value="daily">Daily</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">
+                          Investment Duration ({dcaConfig.frequency === 'daily' ? 'days' : dcaConfig.frequency === 'weekly' ? 'weeks' : 'months'})
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={dcaConfig.duration}
+                          onChange={(e) => setDcaConfig({...dcaConfig, duration: Number(e.target.value)})}
+                          className="w-full bg-black/30 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#FF8A00] focus:border-transparent"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-300">
+                          Amount per Investment (USD)
+                        </label>
+                        <input
+                          type="number"
+                          pattern="[0-9]*[.]?[0-9]*"
+                          value={dcaConfig.amountPerInvestment}
+                          onChange={(e) => setDcaConfig({...dcaConfig, amountPerInvestment: Number(e.target.value)})}
+                          className="w-full bg-black/30 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#FF8A00] focus:border-transparent"
+                        />
+                      </div>
+
+                      <div className="bg-[#FF8A00]/5 p-6 rounded-xl border border-[#FF8A00]/20">
+                        <h3 className="font-medium mb-3 text-[#FF8A00]">Investment Summary</h3>
+                        <div className="space-y-2">
+                          <p className="text-gray-300">
+                            You will invest <span className="font-semibold text-white">${dcaConfig.amountPerInvestment}</span> in {dcaConfig.token} for
+                             <span className="font-semibold text-white"> {dcaConfig.duration } {dcaConfig.frequency === 'daily' ? 'days' : dcaConfig.frequency === 'weekly' ? 'weeks' : 'months'}</span>
+                          </p>
+                          <p className="text-gray-300 font-medium">
+                            Total investment amount: <span className="text-[#FF8A00] font-bold">${totalAmount}</span>
+                          </p>
+                          {!isBalanceSufficient && (
+                            <div className="mt-4 p-4 bg-red-900/30 border border-red-500/30 rounded-xl">
+                              <p className="text-red-400">
+                                Insufficient balance. You need ${totalAmount - usdBalance} more USDC.
+                              </p>
+                              <Link 
+                                href="/topup"
+                                className="text-[#FF8A00] hover:underline mt-2 inline-block"
+                              >
+                                Top up your wallet →
+                              </Link>
+                            </div>
                           )}
-                        </span>
+                        </div>
+                        <div className="mt-4 text-sm text-gray-400">
+                          <p>• Transactions will be executed automatically</p>
+                          <p>• Gas fees will be deducted from your wallet</p>
+                          <p>• You can cancel anytime</p>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700">
-                        Select Token
-                      </label>
-                      <select
-                        value={dcaConfig.token}
-                        onChange={(e) => setDcaConfig({...dcaConfig, token: e.target.value as DCAConfig['token']})}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
+
+                      <button
+                        type="submit"
+                        disabled={!isBalanceSufficient}
+                        className={`w-full bg-[#FF8A00] text-black font-medium py-4 px-6 rounded-xl transition-all ${
+                          !isBalanceSufficient 
+                            ? 'opacity-50 cursor-not-allowed' 
+                            : 'hover:bg-[#FF8A00]/90'
+                        }`}
                       >
-                        <option value="eth">Ethereum (ETH)</option>
-                        <option value="cbbtc">Coinbase BTC (cbBTC)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700">
-                        Investment Frequency
-                      </label>
-                      <select
-                        value={dcaConfig.frequency}
-                        onChange={(e) => setDcaConfig({...dcaConfig, frequency: e.target.value as DCAConfig['frequency']})}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
-                      >
-                        <option value="monthly">Monthly</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="daily">Daily</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700">
-                        Investment Duration ({dcaConfig.frequency === 'daily' ? 'days' : dcaConfig.frequency === 'weekly' ? 'weeks' : 'months'})
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={dcaConfig.duration}
-                        onChange={(e) => setDcaConfig({...dcaConfig, duration: Number(e.target.value)})}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700">
-                        Amount per Investment (USD)
-                      </label>
-                      <input
-                        type="number"
-                        pattern="[0-9]*[.]?[0-9]*"
-                        value={dcaConfig.amountPerInvestment}
-                        onChange={(e) => setDcaConfig({...dcaConfig, amountPerInvestment: Number(e.target.value)})}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 ntext-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
-                      />
-                    </div>
-
-                    <div className="bg-[#0052FF]/5 p-6 rounded-xl border border-[#0052FF]/10">
-                      <h3 className="font-medium mb-3 text-[#0052FF]">Investment Summary</h3>
-                      <div className="space-y-2">
-                        <p className="text-gray-700">
-                          You will invest <span className="font-semibold">${dcaConfig.amountPerInvestment}</span> in {dcaConfig.token} for
-                           <span className="font-semibold"> {dcaConfig.duration } {dcaConfig.frequency === 'daily' ? 'days' : dcaConfig.frequency === 'weekly' ? 'weeks' : 'months'}</span>
-                        </p>
-                        <p className="text-gray-700 font-medium">
-                          Total investment amount: <span className="text-[#0052FF] font-bold">${totalAmount}</span>
-                        </p>
-                        {!isBalanceSufficient && (
-                          <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-xl">
-                            <p className="text-red-600">
-                              Insufficient balance. You need ${totalAmount - usdBalance} more USDC.
-                            </p>
-                            <Link 
-                              href="/topup"
-                              className="text-[#0052FF] hover:underline mt-2 inline-block"
-                            >
-                              Top up your wallet →
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-                      <div className="mt-4 text-sm text-gray-500">
-                        <p>• Transactions will be executed automatically</p>
-                        <p>• Gas fees will be deducted from your wallet</p>
-                        <p>• You can cancel anytime</p>
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={!isBalanceSufficient}
-                      className={`w-full bg-[#0052FF] text-white font-medium py-4 px-6 rounded-xl transition-all ${
-                        !isBalanceSufficient 
-                          ? 'opacity-50 cursor-not-allowed' 
-                          : 'hover:bg-[#0052FF]/90'
-                      }`}
-                    >
-                      {isBalanceSufficient ? 'Start DCA Investment' : 'Insufficient Balance'}
-                    </button>
-                  </form>
+                        {isBalanceSufficient ? 'Start DCA Investment' : 'Insufficient Balance'}
+                      </button>
+                    </form>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <ActionModal
-              isOpen={showConfirmModal}
-              onClose={() => {
-                setShowConfirmModal(false);
-                setError(null);
-                setIsCreatingSip(false);
-              }}
-              onConfirm={handleConfirmDCA}
-              type="edit"
-              title="Confirm DCA Investment"
-              data={
-                !isCreatingSip && !error ? {
-                  Token: dcaConfig.token.toUpperCase(),
-                  Frequency: dcaConfig.frequency,
-                  "Amount per Investment": `$${dcaConfig.amountPerInvestment}`,
-                  Duration: `${dcaConfig.duration} ${dcaConfig.frequency === 'daily' ? 'days' : dcaConfig.frequency === 'weekly' ? 'weeks' : 'months'}`,
-                  "Total Investment": `$${totalAmount}`,
-                } : undefined
-              }
-            />
-
-            <Footer />
-          </>
-        ) : null}
+              <Footer />
+            </>
+          ) : null}
+        </div>
       </main>
     </>
   );

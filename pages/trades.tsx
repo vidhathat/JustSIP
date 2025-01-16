@@ -6,6 +6,7 @@ import Navigation from "../components/Navigation";
 import { getTradesForWallet, getWalletByAddress } from "../services/api";
 import moment from "moment";
 import { getTokenName } from "../constants/utils";
+import DotBackground from "../components/DotBackground";
 
 interface Trade {
   id: number;
@@ -97,86 +98,90 @@ export default function TradesPage() {
         <title>Trade History - Only DCA</title>
       </Head>
 
-      <main className="min-h-screen bg-white">
-        {ready && authenticated ? (
-          <>
-            <Navigation />
+      <main className="min-h-screen relative">
+        <DotBackground />
+        
+        <div className="relative z-10">
+          {ready && authenticated ? (
+            <>
+              <Navigation />
 
-            <div className="px-6 sm:px-20 py-12">
-              <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">Trade History</h1>
+              <div className="px-6 sm:px-20 py-12">
+                <div className="max-w-7xl mx-auto">
+                  <h1 className="text-3xl font-bold text-white mb-8">Trade History</h1>
 
-                {loading ? (
-                  <div className="flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0052FF]"></div>
-                  </div>
-                ) : error ? (
-                  <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600">
-                    {error}
-                  </div>
-                ) : trades.length === 0 ? (
-                  <div className="bg-gray-50 border border-gray-100 rounded-xl p-8 text-center">
-                    <p className="text-gray-600">No trades found</p>
-                  </div>
-                ) : (
-                  <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Date
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              From
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              To
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Amount
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Transaction
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {trades.map((trade) => (
-                            <tr key={trade.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                {moment(trade.created_at).format('MMM D, YYYY h:mm A')}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                {getTokenName(trade.from_token)}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                {getTokenName(trade.to_token)}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {trade.amount} {getTokenName(trade.to_token)}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                <a
-                                  href={`https://basescan.org/tx/${trade.transaction_hash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-[#0052FF] hover:text-[#0052FF]/80"
-                                >
-                                  View Transaction ↗
-                                </a>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                  {loading ? (
+                    <div className="flex justify-center items-center py-20">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF8A00]"></div>
                     </div>
-                  </div>
-                )}
+                  ) : error ? (
+                    <div className="bg-red-900/30 border border-red-500/30 rounded-xl p-4 text-red-400">
+                      {error}
+                    </div>
+                  ) : trades.length === 0 ? (
+                    <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-8 text-center backdrop-blur-sm">
+                      <p className="text-gray-400">No trades found</p>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden backdrop-blur-sm">
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-800">
+                          <thead className="bg-black/50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Date
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                From
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                To
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Amount
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Transaction
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-800">
+                            {trades.map((trade) => (
+                              <tr key={trade.id} className="hover:bg-black/30">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                  {moment(trade.created_at).format('MMM D, YYYY h:mm A')}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
+                                  {getTokenName(trade.from_token)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
+                                  {getTokenName(trade.to_token)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                  {trade.amount} {getTokenName(trade.to_token)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                  <a
+                                    href={`https://basescan.org/tx/${trade.transaction_hash}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[#FF8A00] hover:text-[#FF8A00]/80"
+                                  >
+                                    View Transaction ↗
+                                  </a>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </>
-        ) : null}
+            </>
+          ) : null}
+        </div>
       </main>
     </>
   );

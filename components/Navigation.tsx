@@ -40,7 +40,7 @@ export default function Navigation() {
               onClick={() => router.push(item.path)}
               className={`px-4 py-2 transition-colors ${
                 router.pathname === item.path 
-                  ? 'text-[#0052FF] font-medium' 
+                  ? 'text-white font-medium' 
                   : 'text-gray-600 hover:text-[#0052FF]'
               }`}
             >
@@ -87,7 +87,7 @@ export default function Navigation() {
                     }}
                     className={`block w-full text-left px-4 py-2 transition-colors ${
                       router.pathname === item.path 
-                        ? 'text-[#0052FF] font-medium' 
+                        ? 'text-white font-medium' 
                         : 'text-gray-600 hover:text-[#0052FF]'
                     }`}
                   >
