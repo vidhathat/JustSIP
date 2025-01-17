@@ -2,8 +2,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
-import Image from "next/image";
-import ActionModal from "../components/ActionModal";
 import { createSip, getWalletByAddress, getTokenBalancesForWallet } from "../services/api";
 import Navigation from "../components/Navigation";
 import { useWallet } from '../contexts/WalletContext';
@@ -39,9 +37,6 @@ export default function DCAPage() {
   }, [ready, authenticated, router]);
 
   const calculateTotalInvestment = () => {
-    // For daily: duration is in days
-    // For weekly: duration is in weeks
-    // For monthly: duration is in months
     const totalInvestments = dcaConfig.duration;
     const totalAmount = dcaConfig.duration * dcaConfig.amountPerInvestment;
     

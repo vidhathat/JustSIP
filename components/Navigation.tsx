@@ -41,7 +41,7 @@ export default function Navigation() {
               className={`px-4 py-2 transition-colors ${
                 router.pathname === item.path 
                   ? 'text-white font-medium' 
-                  : 'text-gray-600 hover:text-[#0052FF]'
+                  : 'text-gray-600 hover:text-[#ffffff]'
               }`}
             >
               {item.label}
